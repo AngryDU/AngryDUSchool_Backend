@@ -1,0 +1,5 @@
+DROP TABLE IF EXISTS flyway_schema_history;
+DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS courses;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS token_links;
