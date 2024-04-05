@@ -10,24 +10,25 @@ import org.springframework.stereotype.Component;
 
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
-import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 
 @Component
 @ConfigurationPropertiesBinding
-public class PrivateKeyConverter implements Converter<String, RSAPrivateKey> {
-    public static final String KEY_FOR_EXCEPTION_ALGORITHM_NOT_FOUND = "PrivateKeyConverter.AlgorithmNotFound";
-    public static final String KEY_FOR_EXCEPTION_INVALID_KEY_SPEC = "PrivateKeyConverter.InvalidKeySpec";
+public class PublicKeyConverter implements Converter<String, RSAPublicKey> {
+
+    public static final String KEY_FOR_EXCEPTION_ALGORITHM_NOT_FOUND = "PublicKeyConverter.AlgorithmNotFound";
+    public static final String KEY_FOR_EXCEPTION_INVALID_KEY_SPEC = "PublicKeyConverter.InvalidKeySpec";
 
     @Override
-    public RSAPrivateKey convert(String key) {
-        String privateKeyPEM = key
-                .replace("-----BEGIN PRIVATE KEY-----", "")
+    public RSAPublicKey convert(String source) {
+        String publicKeyPEM = source
+                .replace("-----BEGIN PUBLIC KEY-----", "")
                 .replaceAll(System.lineSeparator(), "")
-                .replace("-----END PRIVATE KEY-----", "");
+                .replace("-----END PUBLIC KEY-----", "");
 
-        byte[] encoded = Base64.decodeBase64(privateKeyPEM);
+        byte[] encoded = Base64.decodeBase64(publicKeyPEM);
 
         KeyFactory keyFactory = null;
         try {
@@ -38,9 +39,9 @@ public class PrivateKeyConverter implements Converter<String, RSAPrivateKey> {
                     ExceptionLocations.KEY_ERROR);
         }
 
-        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(encoded);
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(encoded);
         try {
-            return (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
+            return (RSAPublicKey) keyFactory.generatePublic(keySpec);
         } catch (InvalidKeySpecException e) {
             throw new CustomException(InternalizationMessageManagerConfig
                     .getExceptionMessage(KEY_FOR_EXCEPTION_INVALID_KEY_SPEC),
