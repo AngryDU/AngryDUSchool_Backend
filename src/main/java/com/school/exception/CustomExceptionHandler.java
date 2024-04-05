@@ -12,6 +12,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.net.ConnectException;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.time.LocalDateTime;
 
 @ControllerAdvice
@@ -84,6 +85,15 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(NoSuchAlgorithmException.class)
     public ResponseEntity<ExceptionResponse> handleNoSuchAlgorithmException(NoSuchAlgorithmException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(createExceptionResponse(
+                        InternalizationMessageManagerConfig.getExceptionMessage(INTERNAL_SERVER_ERROR),
+                        InternalizationMessageManagerConfig
+                                .getExceptionMessage(ExceptionLocations.KEY_ERROR.toString())));
+    }
+
+    @ExceptionHandler(InvalidKeySpecException.class)
+    public ResponseEntity<ExceptionResponse> handleInvalidKeySpecException(InvalidKeySpecException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(createExceptionResponse(
                         InternalizationMessageManagerConfig.getExceptionMessage(INTERNAL_SERVER_ERROR),
