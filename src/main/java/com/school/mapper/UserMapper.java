@@ -28,6 +28,7 @@ public class UserMapper {
         user.setLastName(dto.lastName());
         user.setPhone(dto.phone());
         user.setSubject(dto.subject());
+        user.setGoal(dto.goal());
         return user;
     }
 
