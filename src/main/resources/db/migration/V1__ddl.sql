@@ -1,4 +1,13 @@
-CREATE TABLE IF NOT EXISTS users
+CREATE TABLE IF NOT EXISTS attachment
+(
+    id                  UUID DEFAULT gen_random_uuid()      UNIQUE,
+    attach_title        CHARACTER VARYING(150),
+    upload_date         TIMESTAMP                           NOT NULL,
+    extension           CHARACTER VARYING(100),
+    download_link       CHARACTER VARYING(1000)
+);
+
+    CREATE TABLE IF NOT EXISTS users
 (
     id                  UUID DEFAULT gen_random_uuid() UNIQUE,
     email               CHARACTER VARYING(100) NOT NULL,
