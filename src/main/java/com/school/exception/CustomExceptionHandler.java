@@ -28,8 +28,8 @@ public class CustomExceptionHandler {
     public ResponseEntity<ExceptionResponse> handleUserNotFoundException(CustomException ex) {
         HttpStatus httpStatus = switch (ex.getLocation()) {
             case TOKEN_SERVICE_CONFLICT -> HttpStatus.CONFLICT;
-            case USER_SERVICE_VALIDATION, ORDER_SERVICE_VALIDATION, TOKEN_SERVICE_VALIDATION, USER_DTO_ENTITY_VALIDATION ->
-                    HttpStatus.BAD_REQUEST;
+            case USER_SERVICE_VALIDATION, ORDER_SERVICE_VALIDATION, TOKEN_SERVICE_VALIDATION, USER_DTO_ENTITY_VALIDATION,
+                    ORDER_DTO_ENTITY_VALIDATION -> HttpStatus.BAD_REQUEST;
             case USER_SERVICE_NOT_FOUND, TOKEN_NOT_FOUND, ORDER_SERVICE_NOT_FOUND, RESOURCE_NOT_FOUND ->
                     HttpStatus.NOT_FOUND;
             case TOKEN_FORBIDDEN -> HttpStatus.FORBIDDEN;
@@ -99,6 +99,15 @@ public class CustomExceptionHandler {
                         InternalizationMessageManagerConfig.getExceptionMessage(INTERNAL_SERVER_ERROR),
                         InternalizationMessageManagerConfig
                                 .getExceptionMessage(ExceptionLocations.KEY_ERROR.toString())));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ExceptionResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(createExceptionResponse(
+                        InternalizationMessageManagerConfig.getExceptionMessage(DATA_VALIDATION_ERROR),
+                        InternalizationMessageManagerConfig
+                                .getExceptionMessage(ExceptionLocations.ORDER_SERVICE_VALIDATION.toString())));
     }
 
     private ExceptionResponse createExceptionResponse(String message, String exceptionLocations) {
