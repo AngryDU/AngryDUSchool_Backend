@@ -34,12 +34,20 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private State state;
 
+    @Column(name = "purchase")
+    @Enumerated(EnumType.STRING)
+    private Purchase purchase;
+
     @Column(name = "start_date")
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime startDate;
 
-    public enum State{
+    public enum State {
         SELECTED, APPROVED, CANCELLED
+    }
+
+    public enum Purchase {
+        PAY, PAID, UNPAID
     }
 
     @Override
@@ -47,12 +55,12 @@ public class Order {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Order order = (Order) o;
-        return Objects.equals(id, order.id) && Objects.equals(student, order.student) && Objects.equals(tutor, order.tutor) && subject == order.subject && state == order.state && Objects.equals(startDate, order.startDate);
+        return Objects.equals(id, order.id) && Objects.equals(student, order.student) && Objects.equals(tutor, order.tutor) && subject == order.subject && state == order.state && purchase == order.purchase && Objects.equals(startDate, order.startDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, student, tutor, subject, state, startDate);
+        return Objects.hash(id, student, tutor, subject, state, purchase, startDate);
     }
 
     @Override
@@ -63,6 +71,7 @@ public class Order {
                 ", tutor=" + tutor +
                 ", subject=" + subject +
                 ", state=" + state +
+                ", Purchase=" + purchase +
                 ", startDate=" + startDate +
                 '}';
     }
