@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS orders
     tutor_id            UUID,
     subject             CHARACTER VARYING(30),
     state               CHARACTER VARYING(30),
+    purchase            CHARACTER VARYING(30),
     start_date          TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (student_id) REFERENCES users (id),
