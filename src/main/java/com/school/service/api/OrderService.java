@@ -3,6 +3,7 @@ package com.school.service.api;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.school.dto.OrderDtoForPurchase;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -21,4 +22,6 @@ public interface OrderService extends Service<Order, UUID> {
 			Pageable pageable);
 
 	int approve(UUID id);
+
+	Order.Purchase purchase(OrderDtoForPurchase dto);
 }
