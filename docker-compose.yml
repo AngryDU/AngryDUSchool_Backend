@@ -1,5 +1,7 @@
 version: "3.9"
+
 services:
+
   postgres:
     image: postgres:15.2
     container_name: postgres
@@ -14,7 +16,7 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     networks:
-    - app-network
+    - angry-DU-school-network
 
   backend:
     build:
@@ -28,7 +30,7 @@ services:
     ports:
       - "8081:8081"
     networks:
-      - app-network
+      - angry-DU-school-network
 
   mailhog:
     container_name: mailhog
@@ -38,9 +40,13 @@ services:
       - "1025:1025"
       - "8025:8025"
     networks:
-      - app-network
+      - angry-DU-school-network
 
 volumes:
   db-data:
+  backend_logs: { }
+
 networks:
-  app-network:
+  angry-DU-school-network:
+    name: angry-DU-school-network
+    attachable: true
