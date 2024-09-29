@@ -12,6 +12,7 @@ import com.school.repository.CourseRepository;
 import com.school.repository.OrderRepository;
 import com.school.repository.UserRepository;
 import com.school.service.api.OrderService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Slf4j
 @Service(value = "orderService")
 public class OrderServiceImpl implements OrderService {
     public static final String KEY_FOR_EXCEPTION_ORDER_NOT_FOUND = "OrderService.OrderNotFound";
@@ -112,11 +114,15 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order.Purchase purchase(OrderDtoForPurchase dto) {
+        log.info("Started purchase with id = '{}', purchase method = '{}'", dto.id(), dto.purchase());
         Order.Purchase purchase = Order.Purchase.valueOf(dto.purchase());
+
         int result = orderRepository.updatePurchaseForOrder(purchase, dto.id());
+        log.info("Result of purchase update = '{}'", result);
         if (result >= 1) {
             return Order.Purchase.PAID;
         }
+        log.error("Failed to update status");
         return Order.Purchase.UNPAID;
     }
 
