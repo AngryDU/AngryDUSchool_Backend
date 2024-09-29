@@ -4,7 +4,7 @@
     <!--  CONSOLE LOGGING CONFIGURATION  -->
     <appender name="ConsoleAppender" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d [%thread] %-5level %-30logger{30} %X{user.id.key2value} - %msg%n</pattern>
+            <pattern>Angry_DU_School %d [%thread] %-5level %-30logger{30} %X{user.id.key2value} - %msg%n</pattern>
         </encoder>
     </appender>
 
