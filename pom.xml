@@ -21,10 +21,7 @@
 
         <!-- Logging and Serialization Dependencies Versions -->
         <slf4j-api.version>2.0.5</slf4j-api.version>
-        <jackson-core.version>2.15.2</jackson-core.version>
-        <jackson-databind.version>2.15.2</jackson-databind.version>
         <logstash-logback-encoder.version>7.4</logstash-logback-encoder.version>
-        <jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
 
         <javax.version>4.0.1</javax.version>
         <jsr310.version>2.14.2</jsr310.version>
@@ -86,21 +83,6 @@
         </dependency>
 
         <!-- Logging Dependencies -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson-core.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson-databind.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openapitools</groupId>
-            <artifactId>jackson-databind-nullable</artifactId>
-            <version>${jackson-databind-nullable.version}</version>
-        </dependency>
         <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
