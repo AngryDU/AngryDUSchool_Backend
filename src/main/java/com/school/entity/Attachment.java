@@ -14,9 +14,9 @@ import java.util.UUID;
 @Table(name = "attachment")
 public class Attachment {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(unique = true, nullable = false)
-    private UUID attachId;
+    private UUID id;
 
     @Column(name = "attach_title")
     private String attachTitle;
@@ -35,18 +35,18 @@ public class Attachment {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Attachment that = (Attachment) o;
-        return Objects.equals(attachId, that.attachId) && Objects.equals(attachTitle, that.attachTitle) && Objects.equals(uploadDate, that.uploadDate) && Objects.equals(extension, that.extension) && Objects.equals(downloadLink, that.downloadLink);
+        return Objects.equals(id, that.id) && Objects.equals(attachTitle, that.attachTitle) && Objects.equals(uploadDate, that.uploadDate) && Objects.equals(extension, that.extension) && Objects.equals(downloadLink, that.downloadLink);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(attachId, attachTitle, uploadDate, extension, downloadLink);
+        return Objects.hash(id, attachTitle, uploadDate, extension, downloadLink);
     }
 
     @Override
     public String toString() {
         return "Attachment{" +
-                "attachId=" + attachId +
+                "id=" + id +
                 ", attachTitle='" + attachTitle + '\'' +
                 ", uploadDate=" + uploadDate +
                 ", extension='" + extension + '\'' +
