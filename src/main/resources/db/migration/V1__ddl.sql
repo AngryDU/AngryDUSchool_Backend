@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS attachment
 (
     id                  UUID DEFAULT gen_random_uuid()      UNIQUE,
     attach_title        CHARACTER VARYING(150),
-    upload_date         TIMESTAMP                           NOT NULL,
+    upload_date         DATE                                NOT NULL,
     extension           CHARACTER VARYING(100),
     download_link       CHARACTER VARYING(1000)
 );
