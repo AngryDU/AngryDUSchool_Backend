@@ -1,9 +1,16 @@
 package com.school.service.api;
 
+import com.school.dto.AttachmentDtoForSend;
 import com.school.entity.Attachment;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.UUID;
+import java.util.Optional;
 
-public interface AttachmentService extends Service<Attachment, UUID> {
+public interface AttachmentService {
+    Attachment saveAttachment(MultipartFile file);
+
+    Optional<AttachmentDtoForSend> getAttachment(String fileName);
+
+    void deleteAttachment(String fileName);
 
 }
