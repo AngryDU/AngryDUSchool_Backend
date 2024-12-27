@@ -70,6 +70,9 @@ public class User {
     @Column(name = "about_yourself")
     private String aboutYourself;
 
+    @Column(name = "profile_image_id")
+    private String profileImageId;
+
     @Column(name = "is_active")
     private boolean isActive;
 

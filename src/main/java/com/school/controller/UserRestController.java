@@ -60,7 +60,7 @@ public class UserRestController implements GlobalController {
     }
 
     @PostMapping("/personal_data")
-    public User updatePersonalData(@RequestBody UserDtoForUpdatePersonalData user) {
+    public User updatePersonalData(@ModelAttribute UserDtoForUpdatePersonalData user) {
         return userService.updatePersonalData(user);
     }
 

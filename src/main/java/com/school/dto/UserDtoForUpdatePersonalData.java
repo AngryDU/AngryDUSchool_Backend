@@ -5,6 +5,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -38,6 +39,8 @@ public record UserDtoForUpdatePersonalData(
 
         String address,
 
-        String aboutYourself
+        String aboutYourself,
+
+        MultipartFile profileImage
 ) {
 }

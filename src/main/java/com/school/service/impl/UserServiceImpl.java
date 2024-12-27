@@ -1,8 +1,21 @@
 package com.school.service.impl;
 
-import java.util.Optional;
-import java.util.UUID;
-
+import com.school.dto.UserDtoForResponse;
+import com.school.dto.UserDtoForSave;
+import com.school.dto.UserDtoForUpdatePersonalData;
+import com.school.entity.SecurityUser;
+import com.school.entity.User;
+import com.school.exception.CustomException;
+import com.school.exception.ExceptionLocations;
+import com.school.mapper.UserMapper;
+import com.school.message.InternalizationMessageManagerConfig;
+import com.school.repository.UserRepository;
+import com.school.security.JwtUtils;
+import com.school.service.api.AttachmentService;
+import com.school.service.api.MailService;
+import com.school.service.api.TokenLinkService;
+import com.school.service.api.UserService;
+import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -17,22 +30,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.school.dto.UserDtoForResponse;
-import com.school.dto.UserDtoForSave;
-import com.school.dto.UserDtoForUpdatePersonalData;
-import com.school.entity.SecurityUser;
-import com.school.entity.User;
-import com.school.exception.CustomException;
-import com.school.exception.ExceptionLocations;
-import com.school.mapper.UserMapper;
-import com.school.message.InternalizationMessageManagerConfig;
-import com.school.repository.UserRepository;
-import com.school.security.JwtUtils;
-import com.school.service.api.MailService;
-import com.school.service.api.TokenLinkService;
-import com.school.service.api.UserService;
-
-import jakarta.servlet.http.Cookie;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service(value = "userService")
 public class UserServiceImpl implements UserService, UserDetailsService {
@@ -64,6 +63,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final MailService mailService;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
+    private final AttachmentService attachmentService;
 
     @Value("${app.host}")
     private String host;
@@ -77,7 +77,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                            TokenLinkService tokenLinkService,
                            MailService mailService,
                            @Lazy AuthenticationManager authenticationManager,
-                           JwtUtils jwtUtils) {
+                           JwtUtils jwtUtils,
+                           AttachmentService attachmentService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
@@ -85,6 +86,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         this.mailService = mailService;
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
+        this.attachmentService = attachmentService;
     }
 
     @Override
@@ -157,28 +159,28 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-	public Page<User> getAllStudentsWithSortParam(String email, 
-			String firstName, 
-			String lastName, 
-			User.Subject subject, 
-			User.Level level,
-			User.Goal goal,
-			String phone,
-			String address,
-			Pageable pageable) {
-    	Page<User> sortedUsers = userRepository.findAllStudentsWithSortParam(email,
-    			firstName, 
-    			lastName, 
-    			subject, 
-    			level, 
-    			goal, 
-    			phone, 
-    			address, 
-    			pageable);
-		return sortedUsers;
-	}
+    public Page<User> getAllStudentsWithSortParam(String email,
+                                                  String firstName,
+                                                  String lastName,
+                                                  User.Subject subject,
+                                                  User.Level level,
+                                                  User.Goal goal,
+                                                  String phone,
+                                                  String address,
+                                                  Pageable pageable) {
+        Page<User> sortedUsers = userRepository.findAllStudentsWithSortParam(email,
+                firstName,
+                lastName,
+                subject,
+                level,
+                goal,
+                phone,
+                address,
+                pageable);
+        return sortedUsers;
+    }
 
-	@Override
+    @Override
     public User create(User user) {
         User entity = user;
 
@@ -200,11 +202,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 .getExceptionMessage(KEY_FOR_EXCEPTION_USER_NOT_FOUND),
                 ExceptionLocations.USER_SERVICE_NOT_FOUND));
 
+
         User user = userMapper.userDtoForUpdatePersonalDataToUser(dto);
         user.setId(existing.getId());
         user.setEmail(existing.getEmail());
         user.setPassword(existing.getPassword());
         user.setActive(true);
+        if (dto.profileImage() != null && !dto.profileImage().isEmpty()) {
+            String profileImageName = attachmentService.saveAttachment(dto.profileImage()).getAttachmentTitle();
+            user.setProfileImageId(profileImageName);
+        } else {
+            user.setProfileImageId("empty");
+        }
 
         User updatedUser = userRepository.save(user);
 
