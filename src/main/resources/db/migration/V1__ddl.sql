@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS attachment
 (
     id                  UUID DEFAULT gen_random_uuid()      UNIQUE,
-    attach_title        CHARACTER VARYING(150),
+    attachment_title    CHARACTER VARYING(150),
     upload_date         DATE                                NOT NULL,
     extension           CHARACTER VARYING(100),
     download_link       CHARACTER VARYING(1000)
@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS attachment
     phone               VARCHAR(255),
     address             VARCHAR(255),
     about_yourself      TEXT,
+    profile_image_id    CHARACTER VARYING(100),
     is_active           BOOLEAN                NOT NULL DEFAULT TRUE,
     PRIMARY KEY (id)
 );
