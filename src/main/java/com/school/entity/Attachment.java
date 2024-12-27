@@ -18,8 +18,8 @@ public class Attachment {
     @Column(unique = true, nullable = false)
     private UUID id;
 
-    @Column(name = "attach_title")
-    private String attachTitle;
+    @Column(name = "attachment_title")
+    private String attachmentTitle;
 
     @Column(nullable = false, updatable = false, name = "upload_date")
     private LocalDate uploadDate;
@@ -35,19 +35,19 @@ public class Attachment {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Attachment that = (Attachment) o;
-        return Objects.equals(id, that.id) && Objects.equals(attachTitle, that.attachTitle) && Objects.equals(uploadDate, that.uploadDate) && Objects.equals(extension, that.extension) && Objects.equals(downloadLink, that.downloadLink);
+        return Objects.equals(id, that.id) && Objects.equals(attachmentTitle, that.attachmentTitle) && Objects.equals(uploadDate, that.uploadDate) && Objects.equals(extension, that.extension) && Objects.equals(downloadLink, that.downloadLink);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, attachTitle, uploadDate, extension, downloadLink);
+        return Objects.hash(id, attachmentTitle, uploadDate, extension, downloadLink);
     }
 
     @Override
     public String toString() {
         return "Attachment{" +
                 "id=" + id +
-                ", attachTitle='" + attachTitle + '\'' +
+                ", attachTitle='" + attachmentTitle + '\'' +
                 ", uploadDate=" + uploadDate +
                 ", extension='" + extension + '\'' +
                 ", downloadLink='" + downloadLink + '\'' +
