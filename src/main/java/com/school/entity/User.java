@@ -70,8 +70,8 @@ public class User {
     @Column(name = "about_yourself")
     private String aboutYourself;
 
-    @Column(name = "profile_image_id")
-    private String profileImageId;
+    @Column(name = "profile_image_file_name")
+    private String profileImageFileName;
 
     @Column(name = "is_active")
     private boolean isActive;

@@ -9,20 +9,20 @@ CREATE TABLE IF NOT EXISTS attachment
 
     CREATE TABLE IF NOT EXISTS users
 (
-    id                  UUID DEFAULT gen_random_uuid() UNIQUE,
-    email               CHARACTER VARYING(100) NOT NULL,
-    "password"          CHARACTER VARYING(150) NOT NULL,
-    first_name          CHARACTER VARYING(100),
-    last_name           CHARACTER VARYING(100),
-    status              CHARACTER VARYING(100),
-    subject             CHARACTER VARYING(30),
-    "level"             CHARACTER VARYING(30),
-    goal                CHARACTER VARYING(30),
-    phone               VARCHAR(255),
-    address             VARCHAR(255),
-    about_yourself      TEXT,
-    profile_image_id    CHARACTER VARYING(100),
-    is_active           BOOLEAN                NOT NULL DEFAULT TRUE,
+    id                          UUID DEFAULT gen_random_uuid() UNIQUE,
+    email                       CHARACTER VARYING(100) NOT NULL,
+    "password"                  CHARACTER VARYING(150) NOT NULL,
+    first_name                  CHARACTER VARYING(100),
+    last_name                   CHARACTER VARYING(100),
+    status                      CHARACTER VARYING(100),
+    subject                     CHARACTER VARYING(30),
+    "level"                     CHARACTER VARYING(30),
+    goal                        CHARACTER VARYING(30),
+    phone                       VARCHAR(255),
+    address                     VARCHAR(255),
+    about_yourself              TEXT,
+    profile_image_file_name     CHARACTER VARYING(100),
+    is_active                   BOOLEAN                NOT NULL DEFAULT TRUE,
     PRIMARY KEY (id)
 );
 
