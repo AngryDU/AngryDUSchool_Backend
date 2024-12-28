@@ -18,7 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.Optional;
+import java.util.Base64;
 import java.util.UUID;
 
 @Service(value = "attachmentService")
@@ -92,7 +92,7 @@ public class AttachmentServiceImpl implements AttachmentService {
      * @param fileName file name.
      * @return array of image byte.
      */
-    public Optional<AttachmentDtoForSend> getAttachment(String fileName) {
+    public AttachmentDtoForSend getAttachment(String fileName) {
         Path filePath = Paths.get(attachmentDirectory, fileName);
 
         if (!Files.exists(filePath)) {
@@ -101,9 +101,10 @@ public class AttachmentServiceImpl implements AttachmentService {
                     ExceptionLocations.ATTACHMENT_NOT_FOUND);
         }
 
-        byte[] data;
+        String base64Data;
         try {
-            data = Files.readAllBytes(filePath);
+            byte[] data = Files.readAllBytes(filePath);
+            base64Data = Base64.getEncoder().encodeToString(data);
         } catch (IOException e) {
             throw new RuntimeException(KEY_FOR_IMAGE_READING_ERROR, e);
         }
@@ -113,9 +114,9 @@ public class AttachmentServiceImpl implements AttachmentService {
                         .getExceptionMessage(KEY_FOR_FILE_NOT_FOUND),
                         ExceptionLocations.ATTACHMENT_NOT_FOUND));
 
-        AttachmentDtoForSend dto = attachmentMapper.attachmentToAttachmentDtoForSend(attachment, data);
+        AttachmentDtoForSend dto = attachmentMapper.attachmentToAttachmentDtoForSend(attachment, base64Data);
 
-        return Optional.of(dto);
+        return dto;
     }
 
     /**

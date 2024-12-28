@@ -7,13 +7,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AttachmentMapper {
-    public AttachmentDtoForSend attachmentToAttachmentDtoForSend(Attachment entity, byte[] data) {
+    public AttachmentDtoForSend attachmentToAttachmentDtoForSend(Attachment entity, String base64Data) {
         AttachmentDtoForSend dto = new AttachmentDtoForSend(
                 entity.getAttachmentTitle(),
                 entity.getUploadDate(),
-                entity.getExtension(),
                 determineMediaType(entity.getExtension()),
-                data
+                base64Data
         );
         return dto;
     }

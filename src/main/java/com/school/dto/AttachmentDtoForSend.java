@@ -7,7 +7,6 @@ import java.time.LocalDate;
 public record AttachmentDtoForSend(
         String fileName,
         LocalDate uploadDate,
-        String extension,
         MediaType mediaType,
-        byte[] data) {
+        String base64Data) {
 }

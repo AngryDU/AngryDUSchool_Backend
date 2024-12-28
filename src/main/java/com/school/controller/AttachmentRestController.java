@@ -1,5 +1,6 @@
 package com.school.controller;
 
+import com.school.dto.AttachmentDtoForSend;
 import com.school.entity.Attachment;
 import com.school.message.InternalizationMessageManagerConfig;
 import com.school.service.api.AttachmentService;
@@ -39,15 +40,11 @@ public class AttachmentRestController implements GlobalController {
 
 
     @GetMapping("/{fileName}")
-    public ResponseEntity<byte[]> getAttachment(@PathVariable String fileName) {
-        return attachmentService.getAttachment(fileName)
-                .map(attachment -> ResponseEntity.ok()
-                        .contentType(attachment.mediaType()) // Укажите MIME-тип файла
-                        .body(attachment.data()))
-                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    public AttachmentDtoForSend getAttachment(@PathVariable String fileName) {
+        return attachmentService.getAttachment(fileName);
     }
 
-    @DeleteMapping("/{id}") //not checked
+    @DeleteMapping("/{id}") //Not Tested
     public ResponseEntity<String> deleteAttachment(@PathVariable String id) {
         attachmentService.deleteAttachment(id);
         return ResponseEntity.ok(InternalizationMessageManagerConfig

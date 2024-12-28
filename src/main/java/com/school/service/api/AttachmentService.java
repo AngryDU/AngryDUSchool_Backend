@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface AttachmentService {
     Attachment saveAttachment(MultipartFile file);
 
-    Optional<AttachmentDtoForSend> getAttachment(String fileName);
+    AttachmentDtoForSend getAttachment(String fileName);
 
     void deleteAttachment(String fileName);
 
