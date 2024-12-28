@@ -4,6 +4,7 @@ import com.school.dto.UserDtoForSendWithImage;
 import com.school.dto.UserDtoForUpdatePersonalData;
 import com.school.entity.User;
 import com.school.service.api.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserRestController implements GlobalController {
@@ -65,7 +67,12 @@ public class UserRestController implements GlobalController {
 
     @GetMapping("/{id}")
     public UserDtoForSendWithImage getById(@PathVariable UUID id) {
-        return userService.getById(id);
+        log.info("Received request to fetch user with ID: {}", id);//FixMe add local
+
+        UserDtoForSendWithImage dto = userService.getById(id);
+        log.info("User fetched successfully with ID: {}", id);
+
+        return dto;
     }
 
     @PostMapping("/personal_data")

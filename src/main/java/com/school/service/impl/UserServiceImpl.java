@@ -18,6 +18,7 @@ import com.school.service.api.MailService;
 import com.school.service.api.TokenLinkService;
 import com.school.service.api.UserService;
 import jakarta.servlet.http.Cookie;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -35,6 +36,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Service(value = "userService")
 public class UserServiceImpl implements UserService, UserDetailsService {
 
@@ -93,16 +95,32 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public UserDtoForSendWithImage getById(UUID id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new CustomException(InternalizationMessageManagerConfig
-                        .getExceptionMessage(KEY_FOR_EXCEPTION_USER_NOT_FOUND),
-                        ExceptionLocations.USER_SERVICE_NOT_FOUND));
+        log.info("Fetching user with ID: {}", id);//FixMe add local
 
+        try {
+            User user = userRepository.findById(id)
+                    .orElseThrow(() -> {
+                        log.warn("User with ID {} not found.", id);
+                        return new CustomException(InternalizationMessageManagerConfig
+                                .getExceptionMessage(KEY_FOR_EXCEPTION_USER_NOT_FOUND),
+                                ExceptionLocations.USER_SERVICE_NOT_FOUND);
+                    });
 
-        AttachmentDtoForSend image = attachmentService.getAttachment(user.getProfileImageFileName());
+            log.info("User with ID {} found. Fetching profile image.", id);
 
-        UserDtoForSendWithImage dto = userMapper.userToUserDtoForSendWithImage(user, image);
-        return dto;
+            AttachmentDtoForSend image = attachmentService.getAttachment(user.getProfileImageFileName());
+            log.info("Profile image fetched for user ID: {}", id);
+
+            UserDtoForSendWithImage dto = userMapper.userToUserDtoForSendWithImage(user, image);
+            log.info("User with ID {} successfully mapped to DTO.", id);
+
+            return dto;
+        } catch (Exception e) {
+            log.error("Failed to fetch user with ID: {}", id, e);
+            throw new CustomException(InternalizationMessageManagerConfig
+                    .getExceptionMessage(KEY_FOR_EXCEPTION_USER_NOT_FOUND),
+                    ExceptionLocations.USER_SERVICE_NOT_FOUND);
+        }
     }
 
     @Override
