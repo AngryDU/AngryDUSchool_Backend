@@ -8,6 +8,7 @@ import com.school.mapper.AttachmentMapper;
 import com.school.message.InternalizationMessageManagerConfig;
 import com.school.repository.AttachmentRepository;
 import com.school.service.api.AttachmentService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.time.LocalDate;
 import java.util.Base64;
 import java.util.UUID;
 
+@Slf4j
 @Service(value = "attachmentService")
 public class AttachmentServiceImpl implements AttachmentService {
     public static final String KEY_FOR_IMAGE_CATALOG_CANNOT_BE_CREATED = "AttachmentService.CannotCreatedDirectory";
@@ -36,7 +38,8 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Autowired
     public AttachmentServiceImpl(AttachmentRepository attachmentRepository,
-                                 @Value("${attachment.directory}") String imageDirectory, AttachmentMapper attachmentMapper) {
+                                 @Value("${attachment.directory}") String imageDirectory,
+                                 AttachmentMapper attachmentMapper) {
         this.attachmentRepository = attachmentRepository;
         this.attachmentDirectory = imageDirectory;
         this.attachmentMapper = attachmentMapper;
@@ -45,8 +48,9 @@ public class AttachmentServiceImpl implements AttachmentService {
         if (!Files.exists(directoryPath)) {
             try {
                 Files.createDirectories(directoryPath);
+                log.info("Attachment directory created at: {}", directoryPath.toString());
             } catch (IOException e) {
-                //FixMe
+                log.error("Failed to create attachment directory at: {}", directoryPath.toString(), e);
                 throw new CustomException(InternalizationMessageManagerConfig
                         .getExceptionMessage("File not exist"),
                         ExceptionLocations.USER_SERVICE_NOT_FOUND);
@@ -61,16 +65,20 @@ public class AttachmentServiceImpl implements AttachmentService {
      * @return unique filename.
      */
     public Attachment saveAttachment(MultipartFile file) {
+        log.info("Saving attachment: {}", file.getOriginalFilename());
+
         if (file.isEmpty()) {
+            log.warn("Attempted to save an empty file.");
             throw new IllegalArgumentException(KEY_FOR_FILE_IS_EMPTY);
         }
 
         try {
             String extension = getFileExtension(file.getOriginalFilename());
-            String fileName = UUID.randomUUID().toString() + getFileExtension(extension);
+            String fileName = UUID.randomUUID().toString() + extension;
             Path filePath = Paths.get(attachmentDirectory, fileName);
 
             Files.write(filePath, file.getBytes());
+            log.info("Attachment written to disk: {}", filePath.toString());
 
             Attachment attachment = new Attachment();
             attachment.setAttachmentTitle(fileName);
@@ -79,9 +87,11 @@ public class AttachmentServiceImpl implements AttachmentService {
             attachment.setUploadDate(LocalDate.now());
 
             Attachment savedAttachment = attachmentRepository.save(attachment);
+            log.info("Attachment saved to database with ID: {}", savedAttachment.getId());
 
             return savedAttachment;
         } catch (IOException e) {
+            log.error("Error saving the attachment to disk.", e);
             throw new RuntimeException(KEY_FOR_ERROR_SAVING_THE_IMAGE, e);
         }
     }
@@ -93,9 +103,11 @@ public class AttachmentServiceImpl implements AttachmentService {
      * @return array of image byte.
      */
     public AttachmentDtoForSend getAttachment(String fileName) {
-        Path filePath = Paths.get(attachmentDirectory, fileName);
+        log.info("Fetching attachment: {}", fileName);
 
+        Path filePath = Paths.get(attachmentDirectory, fileName);
         if (!Files.exists(filePath)) {
+            log.warn("Attachment file not found: {}", filePath.toString());
             throw new CustomException(InternalizationMessageManagerConfig
                     .getExceptionMessage(KEY_FOR_FILE_NOT_FOUND),
                     ExceptionLocations.ATTACHMENT_NOT_FOUND);
@@ -105,18 +117,22 @@ public class AttachmentServiceImpl implements AttachmentService {
         try {
             byte[] data = Files.readAllBytes(filePath);
             base64Data = Base64.getEncoder().encodeToString(data);
+            log.info("Attachment successfully read from disk: {}", filePath.toString());
         } catch (IOException e) {
+            log.error("Error reading attachment file: {}", filePath.toString(), e);
             throw new RuntimeException(KEY_FOR_IMAGE_READING_ERROR, e);
         }
 
         Attachment attachment = attachmentRepository.findAttachmentByFileName(fileName)
-                .orElseThrow(() -> new CustomException(InternalizationMessageManagerConfig
-                        .getExceptionMessage(KEY_FOR_FILE_NOT_FOUND),
-                        ExceptionLocations.ATTACHMENT_NOT_FOUND));
+                .orElseThrow(() -> {
+                    log.warn("Attachment not found in database: {}", fileName);
+                    return new CustomException(InternalizationMessageManagerConfig
+                            .getExceptionMessage(KEY_FOR_FILE_NOT_FOUND),
+                            ExceptionLocations.ATTACHMENT_NOT_FOUND);
+                });
 
-        AttachmentDtoForSend dto = attachmentMapper.attachmentToAttachmentDtoForSend(attachment, base64Data);
-
-        return dto;
+        log.info("Attachment successfully retrieved from database with ID: {}", attachment.getId());
+        return attachmentMapper.attachmentToAttachmentDtoForSend(attachment, base64Data);
     }
 
     /**
@@ -125,11 +141,18 @@ public class AttachmentServiceImpl implements AttachmentService {
      * @param fileName file name.
      */
     public void deleteAttachment(String fileName) {
-        Path filePath = Paths.get(attachmentDirectory, fileName);
+        log.info("Deleting attachment: {}", fileName);
 
+        Path filePath = Paths.get(attachmentDirectory, fileName);
         try {
-            Files.deleteIfExists(filePath);
+            boolean deleted = Files.deleteIfExists(filePath);
+            if (deleted) {
+                log.info("Attachment successfully deleted from disk: {}", filePath.toString());
+            } else {
+                log.warn("Attachment file not found for deletion: {}", filePath.toString());
+            }
         } catch (IOException e) {
+            log.error("Error deleting attachment file: {}", filePath.toString(), e);
             throw new RuntimeException(KEY_FOR_IMAGE_DELETING_ERROR, e);
         }
     }
@@ -142,6 +165,8 @@ public class AttachmentServiceImpl implements AttachmentService {
      */
     private String getFileExtension(String fileName) {
         int index = fileName.lastIndexOf('.');
-        return index > 0 ? fileName.substring(index) : "";
+        String extension = index > 0 ? fileName.substring(index) : "";
+        log.debug("Extracted file extension: {}", extension);
+        return extension;
     }
 }
