@@ -1,14 +1,16 @@
 package com.school.mapper;
 
-import com.school.dto.UserDtoForUpdatePersonalData;
-import org.springframework.stereotype.Component;
+import com.school.dto.AttachmentDtoForSend;
 import com.school.dto.UserDtoForResponse;
 import com.school.dto.UserDtoForSave;
+import com.school.dto.UserDtoForSendWithImage;
+import com.school.dto.UserDtoForUpdatePersonalData;
 import com.school.entity.User;
+import org.springframework.stereotype.Component;
 
 @Component
 public class UserMapper {
-    public User userDtoForSaveToUser(UserDtoForSave dto) {
+    public User userToUserDtoForSaveToUser(UserDtoForSave dto) {
         User user = new User();
         user.setEmail(dto.email());
         user.setPassword(dto.password());
@@ -17,7 +19,8 @@ public class UserMapper {
         user.setStatus(dto.status());
         return user;
     }
-    public User userDtoForUpdatePersonalDataToUser(UserDtoForUpdatePersonalData dto) {
+
+    public User userToUserDtoForUpdatePersonalDataToUser(UserDtoForUpdatePersonalData dto) {
         User user = new User();
         user.setId(dto.id());
         user.setLevel(dto.level());
@@ -39,5 +42,23 @@ public class UserMapper {
                 user.getFirstName(),
                 user.getStatus()
         );
+    }
+
+    public UserDtoForSendWithImage userToUserDtoForSendWithImage(User user, AttachmentDtoForSend image) {
+        UserDtoForSendWithImage dto = new UserDtoForSendWithImage(
+                user.getId(),
+                user.getEmail(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getStatus(),
+                user.getSubject(),
+                user.getLevel(),
+                user.getGoal(),
+                user.getPhone(),
+                user.getAddress(),
+                user.getAboutYourself(),
+                image
+        );
+        return dto;
     }
 }

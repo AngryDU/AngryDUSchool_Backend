@@ -1,5 +1,6 @@
 package com.school.service.api;
 
+import com.school.dto.UserDtoForSendWithImage;
 import com.school.dto.UserDtoForUpdatePersonalData;
 import jakarta.servlet.http.Cookie;
 import org.springframework.data.domain.Page;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
-    User getById(UUID id);
+    UserDtoForSendWithImage getById(UUID id);
 
     UserDtoForResponse getByEmail(String email);
 
@@ -42,10 +43,10 @@ public interface UserService {
 
     Page<User> getAllTutorsWithSortParam(String subject, Pageable pageable);
 
-	Page<User> getAllStudentsWithSortParam(String email, 
-			String firstName, 
-			String lastName, 
-			User.Subject subject, 
+	Page<User> getAllStudentsWithSortParam(String email,
+			String firstName,
+			String lastName,
+			User.Subject subject,
 			User.Level level,
 			User.Goal goal,
 			String phone,

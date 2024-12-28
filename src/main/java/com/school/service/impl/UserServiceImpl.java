@@ -1,7 +1,9 @@
 package com.school.service.impl;
 
+import com.school.dto.AttachmentDtoForSend;
 import com.school.dto.UserDtoForResponse;
 import com.school.dto.UserDtoForSave;
+import com.school.dto.UserDtoForSendWithImage;
 import com.school.dto.UserDtoForUpdatePersonalData;
 import com.school.entity.SecurityUser;
 import com.school.entity.User;
@@ -90,13 +92,17 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public User getById(UUID id) {
-        User newUser = userRepository.findById(id)
+    public UserDtoForSendWithImage getById(UUID id) {
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new CustomException(InternalizationMessageManagerConfig
                         .getExceptionMessage(KEY_FOR_EXCEPTION_USER_NOT_FOUND),
                         ExceptionLocations.USER_SERVICE_NOT_FOUND));
 
-        return newUser;
+
+        AttachmentDtoForSend image = attachmentService.getAttachment(user.getProfileImageFileName());
+
+        UserDtoForSendWithImage dto = userMapper.userToUserDtoForSendWithImage(user, image);
+        return dto;
     }
 
     @Override
@@ -203,16 +209,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 ExceptionLocations.USER_SERVICE_NOT_FOUND));
 
 
-        User user = userMapper.userDtoForUpdatePersonalDataToUser(dto);
+        User user = userMapper.userToUserDtoForUpdatePersonalDataToUser(dto);
         user.setId(existing.getId());
         user.setEmail(existing.getEmail());
         user.setPassword(existing.getPassword());
         user.setActive(true);
         if (dto.profileImage() != null && !dto.profileImage().isEmpty()) {
             String profileImageName = attachmentService.saveAttachment(dto.profileImage()).getAttachmentTitle();
-            user.setProfileImageId(profileImageName);
+            user.setProfileImageFileName(profileImageName);
         } else {
-            user.setProfileImageId("empty");
+            user.setProfileImageFileName("empty");
         }
 
         User updatedUser = userRepository.save(user);
@@ -248,7 +254,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                     ExceptionLocations.USER_SERVICE_VALIDATION);
         }
 
-        User entity = userMapper.userDtoForSaveToUser(dtoForSave);
+        User entity = userMapper.userToUserDtoForSaveToUser(dtoForSave);
 
         String encodedPassword = passwordEncoder.encode(dtoForSave.password());
         entity.setPassword(encodedPassword);
