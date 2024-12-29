@@ -14,5 +14,6 @@ public enum ExceptionLocations {
     TOKEN_FORBIDDEN,
     RESOURCE_NOT_FOUND,
     MAIL_ERROR,
+    CONTROLLER_VALODATION_ERROR,
     KEY_ERROR;
 }
